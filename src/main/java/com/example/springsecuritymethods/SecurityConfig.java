@@ -5,6 +5,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -14,7 +15,7 @@ import javax.sql.DataSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private DataSource dataSource;
+    private UserDetailsService uds;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -22,21 +23,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("select user_name,user_pwd,user_enabled from user where user_name=?")
-                .authoritiesByUsernameQuery("select user_name,user_role from user where user_name=?")
+        auth.
+                userDetailsService(uds)
                 .passwordEncoder(passwordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/home").permitAll()
+                .antMatchers("/home","/register","/saveUser").permitAll()
                 .antMatchers("/welcome").authenticated()
-                .antMatchers("/admin").hasAuthority("ADMIN")
-                .antMatchers("/emp").hasAuthority("EMPLOYEE")
-                .antMatchers("/mgr").hasAuthority("MANAGER")
+                .antMatchers("/admin").hasAuthority("Admin")
+                .antMatchers("/mgr").hasAuthority("Manager")
+                .antMatchers("/emp").hasAuthority("Employee")
+                .antMatchers("/hr").hasAuthority("HR")
+                .antMatchers("/common").hasAnyAuthority("Employeee,Manager,Admin")
 
                 // Any other URLs which are not configured in above antMatchers
                 // generally declared aunthenticated() in real time

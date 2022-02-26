@@ -5,12 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
-
-    @GetMapping("/")
-    public String indexPage(){
-        return "homePage";
-    }
-
     @GetMapping("/home")
     public String getHomePage() {
         return "homePage";
@@ -36,6 +30,11 @@ public class HomeController {
         return "mgrPage";
     }
 
+    @GetMapping("/hr")
+    public String getHrPage() {
+        return "hrPage";
+    }
+
     @GetMapping("/common")
     public String getCommonPage() {
         return "commonPage";
@@ -45,10 +44,4 @@ public class HomeController {
     public String getAccessDeniedPage() {
         return "accessDeniedPage";
     }
-
-    @GetMapping("/**")
-    public String getDefaultPage() {
-        return "error";
-    }
-
 }
